@@ -1,3 +1,7 @@
+REPO = apphost
+IMAGE = apphost-core
+TAG = 1.0
+
 help:  ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
@@ -5,10 +9,10 @@ run:  ## Run docker compose
 	docker-compose up
 
 build:  ## Build docker
-	docker build -t einstore/einstore-core:local-dev .
+	docker build -t $(REPO)/$(IMAGE):local-dev .
 
 build-debug:  ## Build docker image in debug mode
-	docker build --build-arg CONFIGURATION="debug" -t einstore/einstore-core:local-dev-debug .
+	docker build --build-arg CONFIGURATION="debug" -t $(REPO)/$(IMAGE):local-dev-debug .
 
 clean:  ## Clean docker compose and .build folder
 	docker-compose stop -t 2

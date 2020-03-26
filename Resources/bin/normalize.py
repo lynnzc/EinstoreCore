@@ -58,19 +58,19 @@ def getNormalizedPNG(filename):
                 bufSize = width * height * 4 + height
                 chunkData = decompress( idatAcc, -15, bufSize)
                 
-            except Exception, e:
+            except Exception as e:
                 # The PNG image is normalized
-                print e
+                print(e)
                 return None
 
             chunkType = "IDAT"
 
             # Swapping red & blue bytes for each pixel
             newdata = ""
-            for y in xrange(height):
+            for y in range(height):
                 i = len(newdata)
                 newdata += chunkData[i]
-                for x in xrange(width):
+                for x in range(width):
                     i = len(newdata)
                     newdata += chunkData[i+2]
                     newdata += chunkData[i+1]
@@ -137,22 +137,22 @@ def getFiles(base):
         return _dirs, _pngs
 
 if sys.argv[1] != None:
-    print "normalize.py"
-    print "Converting: " + sys.argv[1]
+    print("normalize.py")
+    print("Converting: " + sys.argv[1])
     updatePNG(sys.argv[1])
     exit()
 else:
     dirs, pngs = getFiles(".")
 
     if len(pngs) == 0:
-        print "0"
+        print("0")
         exit()
 
     normalized = 0
-    for ipng in xrange(len(pngs)):
+    for ipng in range(len(pngs)):
         perc = (float(ipng) / len(pngs)) * 100.0
         if updatePNG(pngs[ipng]):
             normalized += 1
 
-    print "%d" % normalized
+    print("%d" % normalized)
     exit()

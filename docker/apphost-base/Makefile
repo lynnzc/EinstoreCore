@@ -1,6 +1,6 @@
-REPO = einstore
-IMAGE = einstore-base
-TAG = 2.1
+REPO = apphub20
+IMAGE = apphost-base
+TAG = 1.0
 
 all: build publish
 

@@ -1,4 +1,4 @@
-FROM swift:4.2
+FROM swift:5.1
 
 RUN apt-get update && \
     apt-get install -y \
@@ -9,22 +9,21 @@ RUN apt-get update && \
     libssl-dev \
     openssl \
     software-properties-common \
-    gd \
     unzip && \
     rm -rf /var/lib/apt/lists/*
 
 RUN add-apt-repository ppa:openjdk-r/ppa && \
     apt-get update && \
-    apt-get install -y openjdk-7-jdk="7u95-*" && \
+    apt-get install -y openjdk-8-jdk && \
     rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && \
     apt-get install -y \
-    python="2.7.12-*" \
-    python-dev \
-    python-pip \
-    python-software-properties \
-    python-virtualenv && \
+    python3.8 \
+    python3-dev \
+    python3-pip \
+    python3-software-properties \
+    python3-virtualenv && \
     rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
