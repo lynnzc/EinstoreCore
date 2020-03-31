@@ -1,4 +1,4 @@
-FROM einstore/einstore-base:2.0 as builder
+FROM apphub20/apphost-base:1.0 as builder
 
 WORKDIR /app
 COPY . /app
@@ -9,7 +9,7 @@ RUN swift build --configuration ${CONFIGURATION} --product EinstoreRun
 
 # ------------------------------------------------------------------------------
 
-FROM einstore/einstore-base:2.0
+FROM apphub20/apphost-base:1.0
 
 ARG CONFIGURATION="release"
 

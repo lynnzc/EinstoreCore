@@ -2,22 +2,22 @@ version: '2.4'
 
 services:
     api:
-        image: einstore/einstore-base:2.0
+        image: apphub20/apphost-base:1.0
         volumes:
             - .:/app
         working_dir: /app
         restart: on-failure
         environment:
-            APICORE_STORAGE_LOCAL_ROOT: /home/einstore
+            APICORE_STORAGE_LOCAL_ROOT: /home/apphost
 
-            APICORE_SERVER_NAME: "Einstore"
+            APICORE_SERVER_NAME: "Apphost"
             APICORE_SERVER_PATH_PREFIX: ~
             APICORE_SERVER_MAX_UPLOAD_FILESIZE: 800
 
             APICORE_DATABASE_HOST: postgres
-            APICORE_DATABASE_USER: einstore
-            APICORE_DATABASE_PASSWORD: einstore
-            APICORE_DATABASE_DATABASE: einstore
+            APICORE_DATABASE_USER: apphost
+            APICORE_DATABASE_PASSWORD: apphost
+            APICORE_DATABASE_DATABASE: apphost
             APICORE_DATABASE_PORT: 5432
             APICORE_DATABASE_LOGGING: 'false'
 
@@ -31,11 +31,11 @@ services:
         image: postgres:11-alpine
         restart: always
         environment:
-            POSTGRES_USER: einstore
-            POSTGRES_PASSWORD: einstore
-            POSTGRES_DB: einstore
+            POSTGRES_USER: apphost
+            POSTGRES_PASSWORD: apphost
+            POSTGRES_DB: apphost
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U einstore"]
+            test: ["CMD-SHELL", "pg_isready -U apphost"]
             interval: 5s
             timeout: 5s
             retries: 5
@@ -43,12 +43,12 @@ services:
     adminer:
         image: michalhosna/adminer:master
         environment:
-            ADMINER_DB: einstore
+            ADMINER_DB: apphost
             ADMINER_DRIVER: pgsql
-            ADMINER_PASSWORD: einstore
+            ADMINER_PASSWORD: apphost
             ADMINER_SERVER: postgres
-            ADMINER_USERNAME: einstore
+            ADMINER_USERNAME: apphost
             ADMINER_AUTOLOGIN: 1
-            ADMINER_NAME: EinstoreCore
+            ADMINER_NAME: Apphost
         depends_on:
             - postgres

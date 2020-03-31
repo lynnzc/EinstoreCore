@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ORIGINAL_TAG="$1"
 MARK="${2:-""}"
-IMAGE_NAME="einstore/einstore-core"
+IMAGE_NAME="apphub20/apphost-core"
 
 function tagAndPush {
     docker tag "${IMAGE_NAME}:${ORIGINAL_TAG}" "${IMAGE_NAME}:$1"

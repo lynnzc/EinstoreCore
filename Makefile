@@ -1,4 +1,4 @@
-REPO = apphost
+REPO = apphub20
 IMAGE = apphost-core
 TAG = 1.0
 
@@ -9,10 +9,15 @@ run:  ## Run docker compose
 	docker-compose up
 
 build:  ## Build docker
-	docker build -t $(REPO)/$(IMAGE):local-dev .
+	docker build -t $(REPO)/$(IMAGE):$(TAG) .
 
 build-debug:  ## Build docker image in debug mode
 	docker build --build-arg CONFIGURATION="debug" -t $(REPO)/$(IMAGE):local-dev-debug .
+
+publish: build
+	docker tag $(REPO)/$(IMAGE):$(TAG) $(REPO)/$(IMAGE):latest
+	docker push $(REPO)/$(IMAGE):$(TAG)
+	docker push $(REPO)/$(IMAGE):latest
 
 clean:  ## Clean docker compose and .build folder
 	docker-compose stop -t 2
