@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "ApiCore",
-        "repositoryURL": "https://github.com/LiveUI/ApiCore.git",
+        "repositoryURL": "https://github.com/lynnzc/ApiCore.git",
         "state": {
-          "branch": null,
-          "revision": "e656a1143900a174039e2ecae2e2db96471b72dc",
-          "version": "1.0.0"
+          "branch": "master",
+          "revision": "5e1a9542c3d21753f40508eef4af0c53a00a5dd7",
+          "version": null
         }
       },
       {
@@ -132,8 +132,8 @@
         "repositoryURL": "https://github.com/vapor-community/Imperial.git",
         "state": {
           "branch": null,
-          "revision": "b60f0e7b853290239441410f881ac2aad2f4f136",
-          "version": "0.13.0"
+          "revision": "4c0066e8311bb852fdbf990a7449bfdd01b8e38e",
+          "version": "0.17.0"
         }
       },
       {
@@ -141,8 +141,8 @@
         "repositoryURL": "https://github.com/vapor/jwt.git",
         "state": {
           "branch": null,
-          "revision": "2e225c722bf26407c1c4bd11d341e48759f46095",
-          "version": "3.0.0"
+          "revision": "03c8c11f9dd895de2e8edc451a6e375409146a55",
+          "version": "3.1.2"
         }
       },
       {
@@ -201,7 +201,7 @@
       },
       {
         "package": "S3",
-        "repositoryURL": "https://github.com/LiveUI/S3.git",
+        "repositoryURL": "https://github.com/lynnzc/S3.git",
         "state": {
           "branch": null,
           "revision": "48367b8256bcc71becf573f427973da5192a6845",
@@ -294,8 +294,8 @@
         "repositoryURL": "https://github.com/kareman/SwiftShell.git",
         "state": {
           "branch": null,
-          "revision": "beebe43c986d89ea5359ac3adcb42dac94e5e08a",
-          "version": "4.1.2"
+          "revision": "99680b2efc7c7dbcace1da0b3979d266f02e213c",
+          "version": "5.1.0"
         }
       },
       {
@@ -366,8 +366,8 @@
         "repositoryURL": "https://github.com/LiveUI/XMLCoding.git",
         "state": {
           "branch": null,
-          "revision": "8c760e960a5e53a5338c2871c4fcdf06b8c5ace4",
-          "version": "0.4.0"
+          "revision": "f0fbfe17e73f329e13a6133ff5437f7b174049fd",
+          "version": "0.4.1"
         }
       }
     ]

@@ -68,17 +68,17 @@ public class EinstoreCoreBase {
         EinstoreLogo.overrideOriginal()
         
         // Add EinstoreCore models to the migrations
-        ApiCoreBase.add(model: Cluster.self, database: .db)
-        ApiCoreBase.add(model: Build.self, database: .db)
-        ApiCoreBase.add(model: DownloadKey.self, database: .db)
-        ApiCoreBase.add(model: Tag.self, database: .db)
-        ApiCoreBase.add(model: BuildTag.self, database: .db)
-        ApiCoreBase.add(model: UsedTag.self, database: .db)
-        ApiCoreBase.add(model: ApiKey.self, database: .db)
-        ApiCoreBase.add(model: Config.self, database: .db)
-        ApiCoreBase.add(model: Download.self, database: .db)
-        ApiCoreBase.add(model: ApiKeyTag.self, database: .db)
-        ApiCoreBase.add(model: Setting.self, database: .db)
+        ApiCoreBase.add(model: Cluster.self, database: DatabaseIdentifier<Cluster.Database>.db)
+        ApiCoreBase.add(model: Build.self, database: DatabaseIdentifier<Build.Database>.db)
+        ApiCoreBase.add(model: DownloadKey.self, database: DatabaseIdentifier<DownloadKey.Database>.db)
+        ApiCoreBase.add(model: Tag.self, database: DatabaseIdentifier<Tag.Database>.db)
+        ApiCoreBase.add(model: BuildTag.self, database: DatabaseIdentifier<BuildTag.Database>.db)
+        ApiCoreBase.add(model: UsedTag.self, database: DatabaseIdentifier<UsedTag.Database>.db)
+        ApiCoreBase.add(model: ApiKey.self, database: DatabaseIdentifier<ApiKey.Database>.db)
+        ApiCoreBase.add(model: Config.self, database: DatabaseIdentifier<Config.Database>.db)
+        ApiCoreBase.add(model: Download.self, database: DatabaseIdentifier<Download.Database>.db)
+        ApiCoreBase.add(model: ApiKeyTag.self, database: DatabaseIdentifier<ApiKeyTag.Database>.db)
+        ApiCoreBase.add(model: Setting.self, database: DatabaseIdentifier<Setting.Database>.db)
         
         // Register controllers
         for c in controllers {
