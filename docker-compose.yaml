@@ -15,8 +15,8 @@ services:
             APICORE_SERVER_MAX_UPLOAD_FILESIZE: 800
 
             APICORE_DATABASE_HOST: postgres
-            APICORE_DATABASE_USER: apphost
-            APICORE_DATABASE_PASSWORD: apphost
+            APICORE_DATABASE_USER: lynn
+            APICORE_DATABASE_PASSWORD: try123
             APICORE_DATABASE_DATABASE: apphost
             APICORE_DATABASE_PORT: 5432
             APICORE_DATABASE_LOGGING: 'false'
@@ -25,17 +25,17 @@ services:
 
             APICORE_JWT_SECRET: secret
 
-        command: ["swift", "run", "EinstoreRun", "serve", "--hostname", "0.0.0.0", "--port", "8080"]
+        command: ["swift", "run", "AppHost", "serve", "--hostname", "0.0.0.0", "--port", "8080"]
 
     postgres:
         image: postgres:11-alpine
         restart: always
         environment:
-            POSTGRES_USER: apphost
-            POSTGRES_PASSWORD: apphost
+            POSTGRES_USER: lynn
+            POSTGRES_PASSWORD: try123
             POSTGRES_DB: apphost
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U apphost"]
+            test: ["CMD-SHELL", "pg_isready -U lynn -d apphost"]
             interval: 5s
             timeout: 5s
             retries: 5
@@ -45,7 +45,7 @@ services:
         environment:
             ADMINER_DB: apphost
             ADMINER_DRIVER: pgsql
-            ADMINER_PASSWORD: apphost
+            ADMINER_PASSWORD: try123
             ADMINER_SERVER: postgres
             ADMINER_USERNAME: apphost
             ADMINER_AUTOLOGIN: 1
