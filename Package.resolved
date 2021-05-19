@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/lynnzc/ApiCore.git",
         "state": {
           "branch": "master",
-          "revision": "bb2b195863bddfbf3b9c103dea1fa37a56a46e27",
+          "revision": "17573d788f02c03d2b84f5883d45139db2415a50",
           "version": null
         }
       },
@@ -204,8 +204,8 @@
         "repositoryURL": "https://github.com/lynnzc/S3.git",
         "state": {
           "branch": null,
-          "revision": "48367b8256bcc71becf573f427973da5192a6845",
-          "version": "3.0.0"
+          "revision": "8dc2b3950faee4ee9b0cb0a919f8628d9e371a42",
+          "version": "3.0.1"
         }
       },
       {

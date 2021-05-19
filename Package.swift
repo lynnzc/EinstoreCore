@@ -6,14 +6,14 @@ let package = Package(
     products: [
         .library(name: "EinstoreCore", targets: ["EinstoreCore"]),
         .library(name: "EinstoreCoreTestTools", targets: ["EinstoreCoreTestTools"]),
-        .executable(name: "EinstoreRun", targets: ["EinstoreRun"])
+        .executable(name: "AppHost", targets: ["AppHost"])
     ],
     dependencies: [
         .package(name: "Vapor", url: "https://github.com/vapor/vapor.git", from: "3.3.1"),
         .package(name: "Fluent", url: "https://github.com/vapor/fluent.git", from: "3.0.0"),
         .package(name: "FluentPostgreSQL", url: "https://github.com/vapor/fluent-postgresql.git", from: "1.0.0"),
         .package(url: "https://github.com/kareman/SwiftShell.git", from: "5.1.0"),
-        .package(url: "https://github.com/lynnzc/S3.git", from: "3.0.0"),
+        .package(url: "https://github.com/lynnzc/S3.git", from: "3.0.1"),
         .package(url: "https://github.com/LiveUI/ErrorsCore.git", from: "0.1.0"),
         .package(url: "https://github.com/lynnzc/ApiCore.git", .branch("master")),
         .package(url: "https://github.com/lynnzc/MailCore.git", .branch("master")),
@@ -38,7 +38,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "EinstoreRun",
+            name: "AppHost",
             dependencies: [
                 "EinstoreApp"
             ]
