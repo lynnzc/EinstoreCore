@@ -65,10 +65,12 @@ public class ZipStream {
         }
         var result = [UInt8]()
         strm.avail_in = CUnsignedInt(count)
-        strm.next_in = bytes
+        strm.next_in = UnsafeMutablePointer<Bytef>(mutating: bytes)
         repeat {
             strm.avail_out = CUnsignedInt(out.count)
-            strm.next_out = &out+0
+            out.withUnsafeMutableBytes { ptr in
+                strm.next_out = ptr.baseAddress!.assumingMemoryBound(to: UInt8.self) + 0
+            }
             if deflater {
                 res = deflate(&strm, flush ? 1 : 0)
             } else {

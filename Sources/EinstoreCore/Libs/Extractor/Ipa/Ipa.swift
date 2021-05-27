@@ -27,11 +27,19 @@ class Ipa: BaseExtractor, Extractor {
     // MARK: Processing
     
     func process(teamId: DbIdentifier, on req: Request) throws -> Future<Build> {
-        run("unzip", "-o", file.path, "-d", archive.path)
-        try parse()
+        #if os(macOS)
+        let unzip = "unzip"
+        #elseif os(Linux)
+        let unzip = "/usr/bin/unzip"
+        #endif
+        run(unzip, "-o", self.file.path, "-d", self.archive.path)
         
-        let buildFuture = try app(platform: .ios, teamId: teamId, on: req)
-        return buildFuture
+        do {
+            try self.parse()
+        } catch {
+            throw ExtractorError.invalidAppContent
+        }
+        return try self.app(platform: .ios, teamId: teamId, on: req)
     }
     
 }
@@ -44,7 +52,7 @@ extension Ipa {
         var embeddedFile: URL = payload
         embeddedFile.appendPathComponent("embedded.mobileprovision")
         // TODO: Fix by decoding the provisioning file!!!!
-        guard let provisioning: String = try? String(contentsOfFile: embeddedFile.path, encoding: String.Encoding.utf8) else {
+        guard let provisioning = try? String(contentsOfFile: embeddedFile.path, encoding: String.Encoding.utf8) else {
             return
         }
         if provisioning.contains("ProvisionsAllDevices") {
@@ -58,18 +66,17 @@ extension Ipa {
         }
     }
     
-    // TODO: Convert the implementation to use a Codable object
-    private func parseInfoPlistFile(_ plist: [String: Any]) throws {
+    private func parsePlistInfo(_ plist: PlistInfo) throws {
         // Bundle ID
-        guard let bundleId = plist["CFBundleIdentifier"] as? String else {
+        guard let bundleId = plist.CFBundleIdentifier else {
             throw ExtractorError.invalidAppContent
         }
         appIdentifier = bundleId
         
         // Name
-        var appName: String? = plist["CFBundleDisplayName"] as? String
+        var appName: String? = plist.CFBundleDisplayName
         if appName == nil {
-            appName = plist["CFBundleName"] as? String
+            appName = plist.CFBundleName
         }
         guard appName != nil else {
             throw ExtractorError.invalidAppContent
@@ -77,32 +84,32 @@ extension Ipa {
         self.appName = appName
         
         // Versions
-        versionLong = plist["CFBundleShortVersionString"] as? String
-        versionShort = plist["CFBundleVersion"] as? String
+        versionLong = plist.CFBundleShortVersionString
+        versionShort = plist.CFBundleVersion 
         
         // Other plist data
-        if let minOS: String = plist["MinimumOSVersion"] as? String {
+        if let minOS = plist.MinimumOSVersion {
             infoData["minOS"] = minOS
         }
-        if let orientationPhone: [String] = plist["UISupportedInterfaceOrientations"] as? [String] {
+        if let orientationPhone = plist.UISupportedInterfaceOrientations {
             infoData["orientationPhone"] = orientationPhone
         }
-        if let orientationTablet: [String] = plist["UISupportedInterfaceOrientations~ipad"] as? [String] {
+        if let orientationTablet = plist.UISupportedInterfaceOrientationsIpad {
             infoData["orientationTablet"] = orientationTablet
         }
-        if let deviceCapabilities: [String] = plist["UIRequiredDeviceCapabilities"] as? [String] {
+        if let deviceCapabilities = plist.UIRequiredDeviceCapabilities {
             infoData["deviceCapabilities"] = deviceCapabilities
         }
-        if let deviceFamily: [String] = plist["UIDeviceFamily"] as? [String] {
+        if let deviceFamily = plist.UIDeviceFamily {
             infoData["deviceFamily"] = deviceFamily
         }
     }
     
-    private func checkIcons(_ iconInfo: [String: Any], files: [String]) throws {
-        guard let primaryIcon: [String: Any] = iconInfo["CFBundlePrimaryIcon"] as? [String: Any] else {
+    func checkPlistIcons(_ iconInfo: PlistInfoIcon, files: [String]) throws {
+        guard let primaryIcon = iconInfo.CFBundlePrimaryIcon else {
             return
         }
-        guard let icons: [String] = primaryIcon["CFBundleIconFiles"] as? [String] else {
+        guard let icons = primaryIcon.CFBundleIconFiles else {
             return
         }
         
@@ -111,9 +118,10 @@ extension Ipa {
                 if file.contains(icon) {
                     var fileUrl: URL = payload
                     fileUrl.appendPathComponent(file)
-                    let iconData: Data = try Data(contentsOf: fileUrl)
-                    if iconData.count > (self.iconData?.count ?? 0) {
-                        self.iconData = iconData
+                    if let iconData = try? Data(contentsOf: fileUrl) {
+                        if iconData.count > (self.iconData?.count ?? 0) {
+                            self.iconData = iconData
+                        }
                     }
                 }
             }
@@ -121,19 +129,24 @@ extension Ipa {
         
         if let iconData = iconData {
             do {
-                let normalized = try Normalize.getNormalizedPNG(data: iconData)
-                self.iconData = normalized
-            } catch { }
+                if let normalized = try? Normalize.getNormalizedPNG(data: iconData) {
+                    self.iconData = normalized
+                }
+            } catch {
+                print(error)
+            }
         }
     }
     
-    private func parseIcon(_ plist: [String: Any]) throws {
-        let files: [String] = try FileManager.default.contentsOfDirectory(atPath: payload.path)
-        if let iconInfo = plist["CFBundleIcons"] as? [String: Any] {
-            try checkIcons(iconInfo, files: files)
+    func parsePlistIcon(_ plist: PlistInfo) throws {
+        guard let files = try? FileManager.default.contentsOfDirectory(atPath: payload.path) else {
+            return
         }
-        if let iconsInfoTablet = plist["CFBundleIcons~ipad"] as? [String: Any] {
-            try checkIcons(iconsInfoTablet, files: files)
+        if let iconInfo = plist.CFBundleIcons {
+            try checkPlistIcons(iconInfo, files: files)
+        }
+        if let iconsInfoTablet = plist.CFBundleIconsIpad {
+            try checkPlistIcons(iconsInfoTablet, files: files)
         }
     }
     
@@ -142,18 +155,29 @@ extension Ipa {
         
         var embeddedFile: URL = payload
         embeddedFile.appendPathComponent("Info.plist")
-        
-        if let attributes = try? FileManager.default.attributesOfItem(atPath: embeddedFile.path) as [FileAttributeKey: Any],
-            let modified = attributes[FileAttributeKey.modificationDate] as? Date {
-            built = modified
+        do {
+            if let attributes = try? FileManager.default.attributesOfItem(atPath: embeddedFile.path) {
+                if let modified = attributes[FileAttributeKey.modificationDate] as? Date {
+                    built = modified
+                }
+            }
+        } catch {
+            throw ExtractorError.errorParseModified
         }
         
-        guard let plist: [String: Any] = try [String: Any].fill(fromPlist: embeddedFile) else {
-            throw ExtractorError.invalidAppContent
+        do {
+            guard let plistData = try? Data(contentsOf: embeddedFile) else {
+                throw ExtractorError.errorParsePlist
+            }
+            guard let plist = try? PropertyListDecoder().decode(PlistInfo.self, from: plistData) else {
+                throw ExtractorError.errorParsePlist
+            }
+            
+            try parsePlistInfo(plist)
+            try parsePlistIcon(plist)
+        } catch {
+            print("Error occured while reading from the plist file")
+            throw ExtractorError.errorParsePlist
         }
-        
-        try parseInfoPlistFile(plist)
-        try parseIcon(plist)
     }
-    
 }

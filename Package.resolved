@@ -182,15 +182,6 @@
         }
       },
       {
-        "package": "OpenSSL",
-        "repositoryURL": "https://github.com/Kitura/OpenSSL.git",
-        "state": {
-          "branch": null,
-          "revision": "80b04f33b086fc90e28d9ae159d43705fb348e16",
-          "version": "2.2.200"
-        }
-      },
-      {
         "package": "PostgreSQL",
         "repositoryURL": "https://github.com/vapor/postgresql.git",
         "state": {
@@ -213,7 +204,7 @@
         "repositoryURL": "https://github.com/lynnzc/S3.git",
         "state": {
           "branch": null,
-          "revision": "8dc2b3950faee4ee9b0cb0a919f8628d9e371a42",
+          "revision": "1015fb1bc43377150aa49a8eab53d00bdf7dc5ab",
           "version": "3.0.1"
         }
       },

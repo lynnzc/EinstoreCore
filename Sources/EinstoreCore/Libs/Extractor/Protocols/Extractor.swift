@@ -25,6 +25,14 @@ enum ExtractorError: FrontendError {
     /// Error saving file
     case errorSavingFile
     
+    case errorUnzippingFile
+    
+    case errorParseModified
+    
+    case errorParsePlist
+    
+    case errorParseIcon
+    
     /// Error code
     public var identifier: String {
         switch self {
@@ -34,6 +42,14 @@ enum ExtractorError: FrontendError {
             return "boost.extractor.invalid_app_content"
         case .errorSavingFile:
             return "boost.extractor.error_saving_file"
+        case .errorUnzippingFile:
+            return "boost.extractor.error_unzipping_file"
+        case .errorParseModified:
+            return "parse.modified"
+        case .errorParsePlist:
+            return "parse.plist"
+        case .errorParseIcon:
+            return "parse.icon"
         }
     }
     
@@ -54,6 +70,14 @@ enum ExtractorError: FrontendError {
             return "Invalid or unsupported app content"
         case .errorSavingFile:
             return "Unable to save app file on the server"
+        case .errorUnzippingFile:
+            return "Unable to unzip file"
+        case .errorParseModified:
+            return "Unable to parse modified"
+        case .errorParsePlist:
+            return "Unable to parse plist"
+        case .errorParseIcon:
+            return "Unable to parse icon"
         }
     }
 }
@@ -123,7 +147,7 @@ extension Extractor {
                 info = nil
             }
             build.info = info
-            
+
             // Save app
             return build.save(on: req).flatMap() { build in
                 guard let cluster = cluster, cluster.id != nil else {
@@ -153,15 +177,21 @@ extension Extractor {
             throw ExtractorError.errorSavingFile
         }
         
-        let fm = try req.makeFileCore()
-        // TODO: These paths need refactor, they have the root added to them in a few places. This should be coming from one method!!!!!
-        let tempFile = URL(fileURLWithPath: ApiCoreBase.configuration.storage.local.root)
-            .appendingPathComponent(Build.localTempAppFile(on: req).relativePath).path
-        return try fm.move(file: tempFile, to: path, on: req).flatMap() { _ in
-            return try build.save(iconData: self.iconData, on: req).map() { _ in
-                try self.cleanUp()
-                return Void()
+        do {
+            let fm = try req.makeFileCore()
+            // TODO: These paths need refactor, they have the root added to them in a few places. This should be coming from one method!!!!!
+            let tempFile = URL(fileURLWithPath: ApiCoreBase.configuration.storage.local.root)
+                .appendingPathComponent(Build.localTempAppFile(on: req).relativePath).path
+
+            return try fm.move(file: tempFile, to: path, on: req).flatMap() { _ in
+                return try build.save(iconData: self.iconData, on: req).map() { _ in
+                    print("save succeed, remove temp file, \(build.name), \(build.version), \(build.build)")
+                    try self.cleanUp()
+                    return Void()
+                }
             }
+        } catch {
+            throw ExtractorError.errorSavingFile
         }
     }
     

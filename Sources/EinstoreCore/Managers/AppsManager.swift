@@ -94,10 +94,24 @@ public class AppsManager {
             return try EinstoreCoreBase.tempFileHandler.createFolderStructure(url: url, on: req).flatMap() { _ in
                 let tempFilePath = URL(fileURLWithPath: ApiCoreBase.configuration.storage.local.root)
                     .appendingPathComponent(Build.localTempAppFile(on: req).relativePath)
-                try data.write(to: tempFilePath)
+                do {
+                    try data.write(to: tempFilePath, options: .atomic)
+                } catch {
+                    throw ExtractorError.errorSavingFile
+                }
+
+                #if os(macOS)
+                let unzip = "unzip"
+                #elseif os(Linux)
+                let unzip = "/usr/bin/unzip"
+                #endif
                 
-                let output: RunOutput = SwiftShell.run("unzip", "-l", tempFilePath.path)
-                
+                let output: RunOutput
+                do {
+                    output = try run(unzip, "-l", tempFilePath.path)
+                } catch {
+                    throw ExtractorError.errorUnzippingFile
+                }
                 let platform: Build.Platform
                 if output.succeeded {
                     if output.stdout.contains("Payload/") {
@@ -113,7 +127,7 @@ public class AppsManager {
                 else {
                     throw ExtractorError.invalidAppContent
                 }
-                
+
                 let extractor: Extractor = try BaseExtractor.decoder(file: tempFilePath.path, platform: platform, on: req)
                 do {
                     return try extractor.process(teamId: teamId, on: req).flatMap() { build in

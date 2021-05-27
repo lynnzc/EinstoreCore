@@ -120,7 +120,7 @@ class AppsController: Controller {
         }
         
         // Build icon
-        secure.get("builds", DbIdentifier.parameter, "icon") { (req) -> Future<Response> in
+        router.get("builds", DbIdentifier.parameter, "icon") { (req) -> Future<Response> in
             let buildId = try req.parameters.next(DbIdentifier.self)
             return try req.me.teams().flatMap() { teams in
                 return try Build.query(on: req).safeBuild(id: buildId, teamIds: teams.ids).first().flatMap() { build in
@@ -128,10 +128,12 @@ class AppsController: Controller {
                         throw ErrorsCore.HTTPError.notFound
                     }
                     let fm = try req.makeFileCore()
-                    if fm.isRemote, let url = try build.iconUrl(on: req) { // External file service
+                    if fm.isRemote, let url = try build.iconUrl(on: req) {
+                        // External file service
                         let res = req.redirect(to: url.absoluteString, type: .permanent)
                         return req.eventLoop.newSucceededFuture(result: res)
-                    } else { // Local file store
+                    } else {
+                        // Local file store
                         let image = try fm.get(file: path, on: req)
                         return image.flatMap() { data in
                             guard data.count > 0 else {

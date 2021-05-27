@@ -54,7 +54,12 @@ class Apk: BaseExtractor, Extractor {
         
         // Following code will be only used if gradle date stamp is enabled
         func setBuiltFromZip() {
-            let archivedLines = run("/usr/bin/unzip", "-l", file.path).stdout.lines()
+            #if os(macOS)
+            let unzip = "unzip"
+            #elseif os(Linux)
+            let unzip = "/usr/bin/unzip"
+            #endif
+            let archivedLines = run(unzip, "-l", file.path).stdout.lines()
             
             var manifestInfo: [String] = []
             for line in archivedLines {

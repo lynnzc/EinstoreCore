@@ -4,6 +4,9 @@ WORKDIR /app
 COPY . /app
 
 ARG CONFIGURATION="release"
+RUN git config --global http.proxy http://docker.for.mac.localhost:1236
+RUN git config --global https.proxy http://docker.for.mac.localhost:1236
+
 RUN swift build --configuration ${CONFIGURATION} --product AppHost
 
 # ------------------------------------------------------------------------------
