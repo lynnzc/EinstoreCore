@@ -155,16 +155,14 @@ public class AppsManager {
                                         return plainFuture.flatMap() { plainTemplate in
                                             let from = ApiCoreBase.configuration.mail.email
                                             let subject = "Install \(build.name) - \(ApiCoreBase.configuration.server.name)" // TODO: Localize!!!!!!
-                                            return try team.users.query(on: req).all().flatMap() { teamUsers in
-                                                let userEmails: [String] = teamUsers.map({ $0.email }) // QUESTION: Do we want name in the email too?
-                                                let mail = Mailer.Message(from: from, to: from, bcc: userEmails, subject: subject, text: plainTemplate, html: htmlTemplate)
-                                                return try req.mail.send(mail).flatMap() { mailResult in
-                                                    switch mailResult {
-                                                    case .success:
-                                                        return try build.asResponse(.created, to: req)
-                                                    default:
-                                                        throw AuthError.emailFailedToSend
-                                                    }
+                                            let userEmails: [String] = [user.email]
+                                            let mail = Mailer.Message(from: from, to: from, bcc: userEmails, subject: subject, text: plainTemplate, html: htmlTemplate)
+                                            return try req.mail.send(mail).flatMap() { mailResult in
+                                                switch mailResult {
+                                                case .success:
+                                                    return try build.asResponse(.created, to: req)
+                                                default:
+                                                    throw AuthError.emailFailedToSend
                                                 }
                                             }
                                         }
